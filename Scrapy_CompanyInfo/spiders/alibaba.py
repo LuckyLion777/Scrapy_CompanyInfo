@@ -84,6 +84,6 @@ class AlibabaCrawler(scrapy.Spider):
         country = response.xpath('//span[@class="location"]/text()').extract()
         item['country'] = country[0] if country else None
 
-        if item['contact_name'] not in self.company_list:
+        if item['company_name'] not in self.company_list:
             self.company_list.append(item['company_name'])
             yield item
