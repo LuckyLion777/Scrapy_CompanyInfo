@@ -65,6 +65,8 @@ class AlibabaCrawler(scrapy.Spider):
         item['contact_person'] = contact_person.group(1) if contact_person else None
 
         contact_link = response.xpath('//ul[@class="navigation-list"]/li[4]/a/@href').extract()
+        if not contact_link:
+            contact_link = response.xpath('//ul[@class="nav-tabs"]/li[4]/a/@href').extract()
         yield scrapy.Request(
             url=urljoin(response.url, contact_link[0]),
             callback=self.parse_company_contact,
@@ -76,6 +78,10 @@ class AlibabaCrawler(scrapy.Spider):
         item = response.meta.get('item')
 
         company_name = response.xpath('//table[@class="contact-table"]/tr[1]/td/text()').extract()
+        if not company_name:
+            company_name = response.xpath('//table[@class="company-info-data table"]'
+                                          '//th[contains(text(), "Company Name")]'
+                                          '/following-sibling::td[1]/text()').extract()
         item['company_name'] = company_name[0] if company_name else None
 
         website = response.xpath('//table[@class="contact-table"]/tr[3]/td//text()').extract()
