@@ -9,13 +9,15 @@ class AlibabaCrawler(scrapy.Spider):
     name = 'alibaba_crawler'
     allowed_domains = ['alibaba.com']
     start_urls = ['https://www.alibaba.com/companies']
+    company_list = []
 
     def parse(self, response):
         cat_list = response.xpath('//div[contains(@class, "g-cate")]/dl/dt/a/@href').extract()
         for cat in cat_list:
             yield scrapy.Request(
                 url=cat,
-                callback=self.parse_category
+                callback=self.parse_category,
+                dont_filter=True
             )
 
     def parse_category(self, response):
@@ -23,7 +25,8 @@ class AlibabaCrawler(scrapy.Spider):
         for cat in cat_list:
             yield scrapy.Request(
                 url=urljoin(response.url, cat),
-                callback=self.parse_pagination
+                callback=self.parse_pagination,
+                dont_filter = True
             )
 
     def parse_pagination(self, response):
@@ -36,7 +39,8 @@ class AlibabaCrawler(scrapy.Spider):
         for i in range(math.ceil((count-10)/38)):
             yield scrapy.Request(
                 url=pagination_link + str(i+1),
-                callback=self.parse_page
+                callback=self.parse_page,
+                dont_filter=True
             )
 
     def parse_page(self, response):
@@ -44,7 +48,8 @@ class AlibabaCrawler(scrapy.Spider):
         for href in href_list:
             yield scrapy.Request(
                 url=href,
-                callback=self.parse_company_overview
+                callback=self.parse_company_overview,
+                dont_filter=True
             )
 
     def parse_company_overview(self, response):
@@ -63,6 +68,7 @@ class AlibabaCrawler(scrapy.Spider):
         yield scrapy.Request(
             url=urljoin(response.url, contact_link[0]),
             callback=self.parse_company_contact,
+            dont_filter=True,
             meta={'item': item}
         )
 
@@ -78,4 +84,6 @@ class AlibabaCrawler(scrapy.Spider):
         country = response.xpath('//span[@class="location"]/text()').extract()
         item['country'] = country[0] if country else None
 
-        yield item
+        if item['contact_name'] not in self.company_list:
+            self.company_list.append(item['company_name'])
+            yield item
