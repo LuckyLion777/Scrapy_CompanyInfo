@@ -14,6 +14,7 @@ BOT_NAME = 'Scrapy_CompanyInfo'
 SPIDER_MODULES = ['Scrapy_CompanyInfo.spiders']
 NEWSPIDER_MODULE = 'Scrapy_CompanyInfo.spiders'
 
+USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.84 Safari/537.36'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'Scrapy_CompanyInfo (+http://www.yourdomain.com)'
