@@ -15,6 +15,13 @@ class AlibabaCrawler(scrapy.Spider):
                       ' Chrome/68.0.3440.84 Safari/537.36'
     }
 
+    def start_requests(self):
+        yield scrapy.Request(
+            url=self.start_urls[0],
+            callback=self.parse,
+            headers=self.HEADER
+        )
+
     def parse(self, response):
         cat_list = response.xpath('//div[@class="view_buy_leads"]'
                                   '//dl[@class="posted_v_list"]/dt/a/@href').extract()
@@ -22,6 +29,7 @@ class AlibabaCrawler(scrapy.Spider):
             yield scrapy.Request(
                 url=urljoin(response.url, cat),
                 callback=self.parse_categories,
+                headers=self.HEADER,
                 dont_filter=True
             )
 
@@ -31,6 +39,7 @@ class AlibabaCrawler(scrapy.Spider):
             yield scrapy.Request(
                 url=type,
                 callback=self.parse_types,
+                headers=self.HEADER,
                 dont_filter=True
             )
 
@@ -48,6 +57,7 @@ class AlibabaCrawler(scrapy.Spider):
                 yield scrapy.Request(
                     url=page_url.format(page_num=str(i+1)),
                     callback=self.parse_pages,
+                    headers=self.HEADER,
                     dont_filter=True
                 )
 
@@ -64,6 +74,7 @@ class AlibabaCrawler(scrapy.Spider):
                 yield scrapy.Request(
                     url=href_list[i],
                     callback=self.parse_company,
+                    headers=self.HEADER,
                     dont_filter=True,
                     meta={'item': item}
                 )
