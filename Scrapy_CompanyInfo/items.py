@@ -9,4 +9,4 @@ class CompanyItem(scrapy.Item):
     email_address = scrapy.Field()
     contact_person = scrapy.Field()
     contact_phone = scrapy.Field()
-    contact_page_link = scrapy.Field()
+    skype = scrapy.Field()
