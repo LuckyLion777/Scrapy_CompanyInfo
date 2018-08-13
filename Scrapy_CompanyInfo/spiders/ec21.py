@@ -45,20 +45,21 @@ class AlibabaCrawler(scrapy.Spider):
 
     def parse_types(self, response):
         views = response.xpath('//span[@class="viewTxt"]/text()').extract()
-        total_count = re.search('of (.*)', views[0].replace(')', ''), re.DOTALL)
-        total_count = int(total_count.group(1).replace(',', '')) if total_count else 0
-        count_per_page = re.search('(.*?) out of', views[0], re.DOTALL)
-        count_per_page = int(count_per_page.group(1).split('-')[1]) if count_per_page else 0
+        if views:
+            total_count = re.search('of (.*)', views[0].replace(')', ''), re.DOTALL)
+            total_count = int(total_count.group(1).replace(',', '')) if total_count else 0
+            count_per_page = re.search('(.*?) out of', views[0], re.DOTALL)
+            count_per_page = int(count_per_page.group(1).split('-')[1]) if count_per_page else 0
 
-        page_url = response.url.replace('.html', '') + '/page-{page_num}.html'
+            page_url = response.url.replace('.html', '') + '/page-{page_num}.html'
 
-        for i in range(math.ceil(total_count / count_per_page)):
-            yield scrapy.Request(
-                url=page_url.format(page_num=str(i+1)),
-                callback=self.parse_pages,
-                headers=self.HEADER,
-                dont_filter=True
-            )
+            for i in range(math.ceil(total_count / count_per_page)):
+                yield scrapy.Request(
+                    url=page_url.format(page_num=str(i+1)),
+                    callback=self.parse_pages,
+                    headers=self.HEADER,
+                    dont_filter=True
+                )
 
     def parse_pages(self, response):
         href_list = response.xpath('//div[@class="conProduct_list companyList"]'
