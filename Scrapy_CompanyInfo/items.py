@@ -10,3 +10,11 @@ class CompanyItem(scrapy.Item):
     contact_person = scrapy.Field()
     contact_phone = scrapy.Field()
     skype = scrapy.Field()
+
+
+class EuropagesItem(scrapy.Item):
+    sector = scrapy.Field()
+    country = scrapy.Field()
+    company_name = scrapy.Field()
+    website = scrapy.Field()
+    keywords = scrapy.Field()
