@@ -49,14 +49,11 @@ class AlibabaCrawler(scrapy.Spider):
             )
 
     def parse_company_links(self, response):
-        item = response.meta.get('item')
         href_list = response.xpath('//div[contains(@class, "main-title")]/a[1]/@href').extract()
-        company_name_list = response.xpath('//div[contains(@class, "main-title")]/a[1]/@title').extract()
-        country_list = response.xpath('//span[@class="country-name"]/text()').extract()
+        # company_name_list = response.xpath('//div[contains(@class, "main-title")]/a[1]/@title').extract()
+        # country_list = response.xpath('//span[@class="country-name"]/text()').extract()
         for i in range(len(href_list)):
-            item['company_name'] = company_name_list[i]
-            item['country'] = country_list[i]
-            if href_list[i] and href_list[i] not in self.unique_data:
+            if href_list[i] not in self.unique_data:
                 self.unique_data.add(href_list[i])
                 yield scrapy.Request(
                     url=href_list[i],
@@ -67,6 +64,12 @@ class AlibabaCrawler(scrapy.Spider):
 
     def parse_company(self, response):
         item = response.meta.get('item')
+
+        company_name = response.xpath('//h1[@itemprop="name"]/span/text()').extract()
+        item['company_name'] = company_name[0] if company_name else None
+
+        country = response.xpath('//dd[@itemprop="addressCountry"]/span/text()').extract()
+        item['country'] = country[0] if country else None
 
         website = response.xpath('//div[@class="website"]//span[@class="id-pagepeeker-data"]/@rel').extract()
         item['website'] = website[0] if website else None
