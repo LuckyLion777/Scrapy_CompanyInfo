@@ -18,3 +18,15 @@ class EuropagesItem(scrapy.Item):
     company_name = scrapy.Field()
     website = scrapy.Field()
     keywords = scrapy.Field()
+
+
+class CompanyProductItem(scrapy.Item):
+    # product_name = scrapy.Field()
+    company_name = scrapy.Field()
+    category = scrapy.Field()
+    country = scrapy.Field()
+    website = scrapy.Field()
+    telephone = scrapy.Field()
+    email = scrapy.Field()
+    products = scrapy.Field()
+    contact_person = scrapy.Field()
